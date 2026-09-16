@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { predictReliability } from '../../services/api';
 import { PredictResponse } from '../../types';
-import { Cpu, Award, Zap, Play, CheckCircle } from 'lucide-react';
+import { Cpu, Zap, Play, CheckCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export const ModelAnalyticsPage: React.FC = () => {
+  const { isDarkMode } = useTheme();
+
   // Live Prediction Form Inputs
   const [form, setForm] = useState({
     region_id: 'IND_WEST',
@@ -37,61 +40,63 @@ export const ModelAnalyticsPage: React.FC = () => {
     { feature: 'Observed SST', importance: 5.0 }
   ];
 
-  const modelComparison = [
-    { model: 'Gradient Boosting', r2: 99.91, mae: 0.124 },
-    { model: 'XGBoost', r2: 99.88, mae: 0.132 },
-    { model: 'LightGBM', r2: 99.86, mae: 0.140 },
-    { model: 'Random Forest', r2: 99.85, mae: 0.145 }
-  ];
+  const gridColor = isDarkMode ? '#1E293B' : '#F1F5F9';
+  const textColor = isDarkMode ? '#94A3B8' : '#64748B';
+  const tooltipStyle = {
+    backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+    borderColor: isDarkMode ? '#334155' : '#E2E8F0',
+    color: isDarkMode ? '#F8FAFC' : '#0F172A',
+    borderRadius: '0.75rem',
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Cpu className="w-6 h-6 text-ocean-600" />
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Cpu className="w-6 h-6 text-ocean-600 dark:text-ocean-400" />
           <span>Model Analytics & Live Prediction Sandbox</span>
         </h1>
-        <p className="text-xs text-slate-500 font-medium">Machine learning algorithm evaluation, feature importance breakdown, and live inference runner.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Machine learning algorithm evaluation, feature importance breakdown, and live inference runner.</p>
       </div>
 
       {/* Model Performance Scorecards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <span className="text-xs font-bold text-slate-500 uppercase">Primary Model</span>
-          <h3 className="text-lg font-bold text-slate-900 mt-1">Gradient Boosting</h3>
-          <span className="text-xs text-emerald-600 font-semibold">Active in Production</span>
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Primary Model</span>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-1">Gradient Boosting</h3>
+          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Active in Production</span>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <span className="text-xs font-bold text-slate-500 uppercase">Model Accuracy (R²)</span>
-          <h3 className="text-xl font-bold text-emerald-600 mt-1">99.91%</h3>
-          <span className="text-xs text-slate-500">Cross-validated</span>
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Model Accuracy (R²)</span>
+          <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">99.91%</h3>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Cross-validated</span>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <span className="text-xs font-bold text-slate-500 uppercase">Mean Absolute Error</span>
-          <h3 className="text-xl font-bold text-ocean-600 mt-1">0.124</h3>
-          <span className="text-xs text-slate-500">Score Error Margin</span>
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Mean Absolute Error</span>
+          <h3 className="text-xl font-bold text-ocean-600 dark:text-ocean-400 mt-1">0.124</h3>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Score Error Margin</span>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
-          <span className="text-xs font-bold text-slate-500 uppercase">Root Mean Sq. Error</span>
-          <h3 className="text-xl font-bold text-navy-500 mt-1">0.187</h3>
-          <span className="text-xs text-slate-500">RMSE Variance</span>
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Root Mean Sq. Error</span>
+          <h3 className="text-xl font-bold text-navy-500 dark:text-sky-400 mt-1">0.187</h3>
+          <span className="text-xs text-slate-500 dark:text-slate-400">RMSE Variance</span>
         </div>
       </div>
 
       {/* Live Prediction Interactive Sandbox Widget */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <Zap className="w-5 h-5 text-amber-500" />
-          <h3 className="text-base font-bold text-slate-900">Live Prediction Sandbox (`POST /predict`)</h3>
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Live Prediction Sandbox (`POST /predict`)</h3>
         </div>
 
         <form onSubmit={handlePredict} className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Region ID</label>
+            <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Region ID</label>
             <select
               value={form.region_id}
               onChange={e => setForm({ ...form, region_id: e.target.value })}
-              className="w-full p-2 rounded-xl border border-slate-200 bg-white"
+              className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             >
               <option value="IND_WEST">West Coast of India (Arabian Sea)</option>
               <option value="IND_EAST">East Coast of India (Bay of Bengal)</option>
@@ -101,52 +106,52 @@ export const ModelAnalyticsPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Forecast Temp (°C)</label>
+            <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Forecast Temp (°C)</label>
             <input
               type="number" step="0.1"
               value={form.forecast_temperature}
               onChange={e => setForm({ ...form, forecast_temperature: parseFloat(e.target.value) })}
-              className="w-full p-2 rounded-xl border border-slate-200"
+              className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Observed Temp (°C)</label>
+            <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Observed Temp (°C)</label>
             <input
               type="number" step="0.1"
               value={form.observed_temperature}
               onChange={e => setForm({ ...form, observed_temperature: parseFloat(e.target.value) })}
-              className="w-full p-2 rounded-xl border border-slate-200"
+              className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Forecast Salinity (PSU)</label>
+            <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Forecast Salinity (PSU)</label>
             <input
               type="number" step="0.1"
               value={form.forecast_salinity}
               onChange={e => setForm({ ...form, forecast_salinity: parseFloat(e.target.value) })}
-              className="w-full p-2 rounded-xl border border-slate-200"
+              className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Observed Salinity (PSU)</label>
+            <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Observed Salinity (PSU)</label>
             <input
               type="number" step="0.1"
               value={form.observed_salinity}
               onChange={e => setForm({ ...form, observed_salinity: parseFloat(e.target.value) })}
-              className="w-full p-2 rounded-xl border border-slate-200"
+              className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             />
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Forecast Speed (m/s)</label>
+            <label className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Forecast Speed (m/s)</label>
             <input
               type="number" step="0.01"
               value={form.forecast_current_speed}
               onChange={e => setForm({ ...form, forecast_current_speed: parseFloat(e.target.value) })}
-              className="w-full p-2 rounded-xl border border-slate-200"
+              className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             />
           </div>
 
@@ -195,15 +200,15 @@ export const ModelAnalyticsPage: React.FC = () => {
       </div>
 
       {/* Feature Importance Chart */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-        <h3 className="text-sm font-bold text-slate-900">Feature Importance Breakdown</h3>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Feature Importance Breakdown</h3>
         <div className="h-60 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={featureImportance} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis type="number" domain={[0, 50]} tick={{ fontSize: 11 }} />
-              <YAxis dataKey="feature" type="category" tick={{ fontSize: 11 }} width={140} />
-              <Tooltip formatter={(val) => [`${val}%`, 'Relative Importance']} />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis type="number" domain={[0, 50]} tick={{ fontSize: 11, fill: textColor }} />
+              <YAxis dataKey="feature" type="category" tick={{ fontSize: 11, fill: textColor }} width={140} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(val) => [`${val}%`, 'Relative Importance']} />
               <Bar dataKey="importance" fill="#2563EB" radius={[0, 6, 6, 0]} />
             </BarChart>
           </ResponsiveContainer>

@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, TrendingUp, MapPin, Thermometer, Droplets, Wind, Waves, ShieldCheck, Activity, Download } from 'lucide-react';
+import { X, TrendingUp, Thermometer, Droplets } from 'lucide-react';
 import { SelectedLocationData } from '../../types';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface LocationProfileModalProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
   onClose,
   location
 }) => {
+  const { isDarkMode } = useTheme();
+
   if (!isOpen) return null;
 
   const depthProfileData = [
@@ -27,6 +30,15 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
     { depth: 3200, temp: 2.1, salinity: 34.6, speed: 0.02 }
   ];
 
+  const gridColor = isDarkMode ? '#1E293B' : '#E2E8F0';
+  const textColor = isDarkMode ? '#94A3B8' : '#64748B';
+  const tooltipStyle = {
+    backgroundColor: isDarkMode ? '#0F172A' : '#FFFFFF',
+    borderColor: isDarkMode ? '#334155' : '#E2E8F0',
+    color: isDarkMode ? '#F8FAFC' : '#0F172A',
+    borderRadius: '0.75rem',
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 text-slate-800 dark:text-slate-100 space-y-6">
@@ -34,11 +46,11 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-ocean-500/10 text-ocean-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-ocean-500/10 text-ocean-600 dark:text-ocean-400 flex items-center justify-center">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-bold uppercase text-ocean-600 tracking-wider">Deep Ocean Vertical Profile</span>
+              <span className="text-xs font-bold uppercase text-ocean-600 dark:text-ocean-400 tracking-wider">Deep Ocean Vertical Profile</span>
               <h2 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                 {location.oceanName} Profile Inspector
               </h2>
@@ -47,7 +59,7 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-500 transition-colors"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -63,7 +75,7 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
           </div>
           <div>
             <span className="text-slate-500 dark:text-slate-400 block font-semibold">Reliability Score</span>
-            <span className="font-extrabold text-emerald-600 text-sm">
+            <span className="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
               {location.reliabilityScore}% ({location.confidenceLevel})
             </span>
           </div>
@@ -97,17 +109,17 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
                       <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="depth" stroke="#94a3b8" fontSize={10} tickFormatter={(v) => `${v}m`} />
-                  <YAxis stroke="#94a3b8" fontSize={10} domain={['auto', 'auto']} />
-                  <Tooltip formatter={(val: any) => [`${Number(val).toFixed(1)} °C`, 'Temperature']} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                  <XAxis dataKey="depth" stroke={textColor} fontSize={10} tickFormatter={(v) => `${v}m`} />
+                  <YAxis stroke={textColor} fontSize={10} domain={['auto', 'auto']} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(val: any) => [`${Number(val).toFixed(1)} °C`, 'Temperature']} />
                   <Area type="monotone" dataKey="temp" stroke="#f43f5e" strokeWidth={2.5} fillOpacity={1} fill="url(#profileTempGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Salinity & Current Speed Profile */}
+          {/* Salinity Profile */}
           <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
               <span className="font-bold text-xs uppercase tracking-wider text-cyan-500 flex items-center gap-1.5">
@@ -124,10 +136,10 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
                       <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="depth" stroke="#94a3b8" fontSize={10} tickFormatter={(v) => `${v}m`} />
-                  <YAxis stroke="#94a3b8" fontSize={10} domain={['auto', 'auto']} />
-                  <Tooltip formatter={(val: any) => [`${Number(val).toFixed(1)} PSU`, 'Salinity']} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                  <XAxis dataKey="depth" stroke={textColor} fontSize={10} tickFormatter={(v) => `${v}m`} />
+                  <YAxis stroke={textColor} fontSize={10} domain={['auto', 'auto']} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(val: any) => [`${Number(val).toFixed(1)} PSU`, 'Salinity']} />
                   <Area type="monotone" dataKey="salinity" stroke="#06b6d4" strokeWidth={2.5} fillOpacity={1} fill="url(#profileSalGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -138,7 +150,7 @@ export const LocationProfileModal: React.FC<LocationProfileModalProps> = ({
 
         {/* Modal Footer */}
         <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-4">
-          <span className="text-xs text-slate-500">Source: HYCOM Numerical Forecast + Argo In-situ Floating Profilers</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Source: HYCOM Numerical Forecast + Argo In-situ Floating Profilers</span>
           <button
             onClick={onClose}
             className="px-6 py-2 rounded-xl bg-ocean-600 hover:bg-ocean-700 text-white font-bold text-xs transition-colors"

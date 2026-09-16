@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { X, Settings, RefreshCw, Sun, Moon, Database, Cpu, Layers, Sliders, Check, ShieldCheck } from 'lucide-react';
+import { X, Settings, Check } from 'lucide-react';
+import { ThemeToggle } from '../common/ThemeToggle';
 
 interface SystemSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isDarkMode: boolean;
-  onToggleTheme: () => void;
+  isDarkMode?: boolean;
+  onToggleTheme?: () => void;
 }
 
 export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
   isOpen,
   onClose,
-  isDarkMode,
-  onToggleTheme
 }) => {
   const [refreshInterval, setRefreshInterval] = useState<'15s' | '30s' | '60s'>('30s');
   const [tempUnit, setTempUnit] = useState<'C' | 'F'>('C');
@@ -37,7 +36,7 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-ocean-500/10 text-ocean-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-ocean-500/10 text-ocean-600 dark:text-ocean-400 flex items-center justify-center">
               <Settings className="w-5 h-5" />
             </div>
             <div>
@@ -50,7 +49,7 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-500 transition-colors"
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -64,15 +63,9 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-bold text-slate-900 dark:text-white block">Theme Mode</span>
-                <span className="text-slate-500 text-[11px]">Toggle Dark / Light interface theme</span>
+                <span className="text-slate-500 dark:text-slate-400 text-[11px]">Select Light, Dark, or System theme</span>
               </div>
-              <button
-                onClick={onToggleTheme}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-semibold shadow-xs"
-              >
-                {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
-                <span>{isDarkMode ? 'Dark' : 'Light'}</span>
-              </button>
+              <ThemeToggle compact={false} />
             </div>
           </div>
 
@@ -81,9 +74,9 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-bold text-slate-900 dark:text-white block">Auto-Refresh Interval</span>
-                <span className="text-slate-500 text-[11px]">Sync live telemetry stream from FastAPI & DB</span>
+                <span className="text-slate-500 dark:text-slate-400 text-[11px]">Sync live telemetry stream from FastAPI & DB</span>
               </div>
-              <div className="flex items-center gap-1 bg-white dark:bg-slate-700 p-1 rounded-xl border border-slate-200 dark:border-slate-600">
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600">
                 {(['15s', '30s', '60s'] as const).map((rate) => (
                   <button
                     key={rate}
@@ -106,9 +99,9 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-bold text-slate-900 dark:text-white block">Temperature Unit</span>
-                <span className="text-slate-500 text-[11px]">Celsius (°C) vs Fahrenheit (°F)</span>
+                <span className="text-slate-500 dark:text-slate-400 text-[11px]">Celsius (°C) vs Fahrenheit (°F)</span>
               </div>
-              <div className="flex items-center gap-1 bg-white dark:bg-slate-700 p-1 rounded-xl border border-slate-200 dark:border-slate-600">
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-700/80 p-1 rounded-xl border border-slate-200 dark:border-slate-600">
                 <button
                   onClick={() => setTempUnit('C')}
                   className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-all ${
@@ -157,7 +150,7 @@ export const SystemSettingsModal: React.FC<SystemSettingsModalProps> = ({
         <div className="flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800 pt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
           >
             Cancel
           </button>

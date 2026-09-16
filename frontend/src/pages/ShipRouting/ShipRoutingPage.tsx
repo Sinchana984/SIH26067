@@ -46,6 +46,7 @@ import {
 import { PortLocation, VesselProfile, ShipRouteResult, RouteWaypoint } from '../../types';
 
 import { RouteMap } from '../../components/routing/RouteMap';
+import { OceanIntelligencePanel } from '../../components/intelligence/OceanIntelligencePanel';
 
 export const ShipRoutingPage: React.FC = () => {
   // ── State ─────────────────────────────────────────────────────────────────
@@ -315,6 +316,16 @@ export const ShipRoutingPage: React.FC = () => {
 
         {/* ── LEFT CONTROL PANEL (4 Cols) ─────────────────────────────────── */}
         <div className="lg:col-span-4 space-y-5">
+          {/* AI Ocean Intelligence Panel */}
+          <OceanIntelligencePanel
+            onRouteGenerated={(newRoute) => {
+              setRouteResult(newRoute);
+              if (newRoute.origin_port) setOriginId(newRoute.origin_port.id);
+              if (newRoute.destination_port) setDestId(newRoute.destination_port.id);
+            }}
+            currentRoute={routeResult}
+          />
+
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">

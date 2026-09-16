@@ -1,0 +1,597 @@
+{
+  "What can OceanSphere help me with?": {
+    "reply": "### \ud83c\udf0a OceanSphere \u2014 Intelligent Decision Support System\nOceanSphere is an integrated marine forecast, reliability, and smart vessel routing platform. Key modules include:\n\n- \ud83d\udea2 **Smart Marine Routing**: Water-constrained pathfinding with wave & current hazard avoidance.\n- \ud83d\udee1\ufe0f **Forecast Reliability Engine**: ML model bias evaluation comparing HYCOM forecasts against Argo floats.\n- \ud83c\udf0a **Ocean Hydrodynamics**: High-resolution 3D temperature, salinity, currents, and wave field visualizer.\n- \ud83d\udea8 **Severe Alerts System**: Real-time coastal cyclone, storm surge, and high-wave hazard warnings.\n- \ud83e\udd16 **AI Prediction Copilot**: Natural-language gradient boosting model inference.\n\n\ud83d\udca1 *Try asking: 'Plan a route from Kolkata to Kochi', 'What is the temperature in Arabian Sea?', or 'Explain forecast reliability scores.'*",
+    "tools_called": [
+      "get_platform_capabilities"
+    ],
+    "route_result": null,
+    "comparison_result": null,
+    "data_sources_used": [
+      "PLATFORM_DOCUMENTATION"
+    ],
+    "suggestions": [
+      "Plan a route from Kolkata to Kochi",
+      "What dataset is OceanSphere built on?",
+      "Where can I view ocean observations?"
+    ],
+    "ui_action": null
+  },
+  "Plan a route from Kolkata to Kochi.": {
+    "reply": "### \ud83e\udd16 OceanSphere Smart Marine Route\nGenerated strictly water-constrained route for **Kolkata / Haldia Dock** \u2192 **Cochin (Kochi) Port**:\n\n- \ud83d\udccf **Total Voyage Distance**: `1226.9 NM`\n- \u23f1\ufe0f **Estimated Transit Time**: `62.9 hours` (Sep 19, 2026 - 16:47 UTC)\n- \ud83d\udea2 **Vessel Profile**: `Ultra Large Container Vessel (18,000 TEU)` at `19.5 kts`\n- \u26fd **Fuel Consumption**: `117.9 tons` (`367.1 tons CO\u2082`)\n- \ud83c\udfaf **Forecast Reliability**: `94.0%` (Low Operational Risk)\n- \ud83d\udee1\ufe0f **Land Constraint Status**: `100% Water-Constrained (0 Land Crossings)`\n\n\ud83d\udca1 _The route geometry has been updated on the interactive map below._\n\n_Data Sources: `MODEL` (HYCOM) | `ANALYSIS` (Gradient Boosting ML) | `HEURISTIC` (A* Pathfinder)_",
+    "tools_called": [
+      "route_vessel",
+      "route_details"
+    ],
+    "route_result": {
+      "route_id": "RTE-CCU-COK-RELIABILITY",
+      "optimization_mode": "reliability",
+      "origin_port": {
+        "id": "CCU",
+        "name": "Kolkata / Haldia Dock",
+        "country": "India",
+        "latitude": 22.57,
+        "longitude": 88.36,
+        "region_id": "IND_EAST",
+        "type": "Regional Port",
+        "depth_m": 10.5,
+        "description": "Riverine port gateway to Eastern & NE trade"
+      },
+      "destination_port": {
+        "id": "COK",
+        "name": "Cochin (Kochi) Port",
+        "country": "India",
+        "latitude": 9.96,
+        "longitude": 76.27,
+        "region_id": "IND_SOUTH",
+        "type": "Transshipment",
+        "depth_m": 14.5,
+        "description": "Strategic gateway to Lakshadweep Sea & SW Trade Corridor"
+      },
+      "vessel": {
+        "id": "CONTAINER_L",
+        "name": "Ultra Large Container Vessel (18,000 TEU)",
+        "category": "Container",
+        "default_speed_knots": 19.5,
+        "draft_m": 15.5,
+        "fuel_rate_tons_per_day": 45.0,
+        "max_wave_height_m": 4.5,
+        "icon_name": "Ship"
+      },
+      "total_distance_nm": 1226.9,
+      "estimated_transit_hours": 62.9,
+      "eta_formatted": "Sep 19, 2026 - 16:47 UTC",
+      "average_speed_knots": 19.5,
+      "average_reliability_score": 94.0,
+      "fuel_consumption_tons": 117.9,
+      "co2_emissions_tons": 367.1,
+      "overall_risk": "Low Operational Risk",
+      "hazard_zones_bypassed": 0,
+      "fuel_saved_tons_vs_direct": 0.0,
+      "hours_saved_vs_direct": 0.0,
+      "waypoints": [
+        {
+          "step": 0,
+          "latitude": 21.69,
+          "longitude": 88.36,
+          "name": "Departure: Kolkata / Haldia Dock",
+          "distance_from_start_nm": 0.0,
+          "leg_distance_nm": 0.0,
+          "heading_deg": 185.5,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.34,
+          "current_speed_knots": 0.42,
+          "current_dir_deg": 247.2,
+          "temperature_c": 23.4,
+          "reliability_score": 94.0,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 1,
+          "latitude": 19.0,
+          "longitude": 88.0,
+          "name": "Water Passage Leg 1 (19.0\u00b0N, 88.0\u00b0E)",
+          "distance_from_start_nm": 162.8,
+          "leg_distance_nm": 162.8,
+          "heading_deg": 187.2,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.35,
+          "current_speed_knots": -0.11,
+          "current_dir_deg": 212.0,
+          "temperature_c": 24.0,
+          "reliability_score": 91.7,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 2,
+          "latitude": 10.0,
+          "longitude": 79.8,
+          "name": "Water Passage Leg 2 (10.0\u00b0N, 79.8\u00b0E)",
+          "distance_from_start_nm": 882.9,
+          "leg_distance_nm": 720.1,
+          "heading_deg": 222.5,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.83,
+          "current_speed_knots": -0.5,
+          "current_dir_deg": 38.4,
+          "temperature_c": 26.5,
+          "reliability_score": 99.4,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 3,
+          "latitude": 9.0,
+          "longitude": 79.4,
+          "name": "Water Passage Leg 3 (9.0\u00b0N, 79.4\u00b0E)",
+          "distance_from_start_nm": 947.5,
+          "leg_distance_nm": 64.5,
+          "heading_deg": 201.6,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.4,
+          "current_speed_knots": -0.48,
+          "current_dir_deg": 23.2,
+          "temperature_c": 26.7,
+          "reliability_score": 97.7,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 4,
+          "latitude": 8.4,
+          "longitude": 78.4,
+          "name": "Water Passage Leg 4 (8.4\u00b0N, 78.4\u00b0E)",
+          "distance_from_start_nm": 1016.9,
+          "leg_distance_nm": 69.4,
+          "heading_deg": 238.8,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.95,
+          "current_speed_knots": -0.48,
+          "current_dir_deg": 8.0,
+          "temperature_c": 26.9,
+          "reliability_score": 95.9,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 5,
+          "latitude": 8.0,
+          "longitude": 77.4,
+          "name": "Water Passage Leg 5 (8.0\u00b0N, 77.4\u00b0E)",
+          "distance_from_start_nm": 1081.0,
+          "leg_distance_nm": 64.1,
+          "heading_deg": 248.1,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.61,
+          "current_speed_knots": -0.48,
+          "current_dir_deg": 355.2,
+          "temperature_c": 27.0,
+          "reliability_score": 95.7,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 6,
+          "latitude": 8.6,
+          "longitude": 76.6,
+          "name": "Water Passage Leg 6 (8.6\u00b0N, 76.6\u00b0E)",
+          "distance_from_start_nm": 1140.6,
+          "leg_distance_nm": 59.6,
+          "heading_deg": 307.2,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.65,
+          "current_speed_knots": -0.5,
+          "current_dir_deg": 356.0,
+          "temperature_c": 26.8,
+          "reliability_score": 93.6,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 7,
+          "latitude": 9.8,
+          "longitude": 76.2,
+          "name": "Water Passage Leg 7 (9.8\u00b0N, 76.2\u00b0E)",
+          "distance_from_start_nm": 1216.5,
+          "leg_distance_nm": 75.8,
+          "heading_deg": 341.8,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.0,
+          "current_speed_knots": -0.41,
+          "current_dir_deg": 7.2,
+          "temperature_c": 26.5,
+          "reliability_score": 89.2,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 8,
+          "latitude": 9.9704,
+          "longitude": 76.2314,
+          "name": "Arrival: Cochin (Kochi) Port",
+          "distance_from_start_nm": 1226.9,
+          "leg_distance_nm": 10.4,
+          "heading_deg": 10.3,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.08,
+          "current_speed_knots": -0.4,
+          "current_dir_deg": 9.5,
+          "temperature_c": 26.5,
+          "reliability_score": 88.8,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        }
+      ],
+      "direct_distance_nm": 1027.7,
+      "direct_waypoints": [
+        {
+          "latitude": 22.57,
+          "longitude": 88.36
+        },
+        {
+          "latitude": 20.9937,
+          "longitude": 86.8487
+        },
+        {
+          "latitude": 19.4175,
+          "longitude": 85.3375
+        },
+        {
+          "latitude": 17.8413,
+          "longitude": 83.8263
+        },
+        {
+          "latitude": 16.265,
+          "longitude": 82.315
+        },
+        {
+          "latitude": 14.6888,
+          "longitude": 80.8037
+        },
+        {
+          "latitude": 13.1125,
+          "longitude": 79.2925
+        },
+        {
+          "latitude": 11.5363,
+          "longitude": 77.7812
+        },
+        {
+          "latitude": 9.96,
+          "longitude": 76.27
+        }
+      ],
+      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=22.57,88.36&destination=9.96,76.27&waypoints=19.0,88.0|10.0,79.8|9.0,79.4|8.4,78.4|8.0,77.4|8.6,76.6|9.8,76.2",
+      "google_earth_url": "https://earth.google.com/web/@16.265,82.315,500000a,35y,0h,0t,0r"
+    },
+    "comparison_result": null,
+    "data_sources_used": [],
+    "suggestions": [
+      "Why does this route avoid Sri Lanka?",
+      "What are the ocean conditions along this route?",
+      "Compare Kolkata / Haldia Dock \u2192 Cochin (Kochi) Port with Kolkata \u2192 Kochi",
+      "Switch vessel profile to Tanker (VLCC)"
+    ],
+    "ui_action": null
+  },
+  "Why does it avoid Sri Lanka?": {
+    "reply": "### \ud83c\udf0a Sri Lanka Detour Technical Explanation\nGenerated route **Kolkata / Haldia Dock** \u2192 **Cochin (Kochi) Port** avoids the Palk Strait between India and Sri Lanka due to strict navigational constraints:\n\n1. \u26a0\ufe0f **Shallow Bathymetry & Coral Reef Hazards**: The Palk Strait contains Adam's Bridge (Rama Setu) with water depths < 3 meters. Commercial vessels with draft > 10m would ground.\n2. \ud83d\udee1\ufe0f **100% Water-Constrained A* Pathfinder**: Our algorithm checks every path segment against coastline polygons and depth grids.\n3. \ud83d\udccd **Safe Open-Water Corridor**: Route navigates around southern Sri Lanka via **Dondra Head (5.5\u00b0N, 80.6\u00b0E)** in deep open water.\n\n- \ud83d\udccf Voyage Distance: `1226.9 NM` | \u23f1\ufe0f Transit Time: `62.9 hrs`\n\n_Data Sources: `HEURISTIC` (A* Pathfinder) | `MODEL` (GEBCO Bathymetry) | `OBSERVATION` (Navigational Charts)_",
+    "tools_called": [
+      "route_vessel",
+      "route_details"
+    ],
+    "route_result": {
+      "route_id": "RTE-CCU-COK-RELIABILITY",
+      "optimization_mode": "reliability",
+      "origin_port": {
+        "id": "CCU",
+        "name": "Kolkata / Haldia Dock",
+        "country": "India",
+        "latitude": 22.57,
+        "longitude": 88.36,
+        "region_id": "IND_EAST",
+        "type": "Regional Port",
+        "depth_m": 10.5,
+        "description": "Riverine port gateway to Eastern & NE trade"
+      },
+      "destination_port": {
+        "id": "COK",
+        "name": "Cochin (Kochi) Port",
+        "country": "India",
+        "latitude": 9.96,
+        "longitude": 76.27,
+        "region_id": "IND_SOUTH",
+        "type": "Transshipment",
+        "depth_m": 14.5,
+        "description": "Strategic gateway to Lakshadweep Sea & SW Trade Corridor"
+      },
+      "vessel": {
+        "id": "CONTAINER_L",
+        "name": "Ultra Large Container Vessel (18,000 TEU)",
+        "category": "Container",
+        "default_speed_knots": 19.5,
+        "draft_m": 15.5,
+        "fuel_rate_tons_per_day": 45.0,
+        "max_wave_height_m": 4.5,
+        "icon_name": "Ship"
+      },
+      "total_distance_nm": 1226.9,
+      "estimated_transit_hours": 62.9,
+      "eta_formatted": "Sep 19, 2026 - 16:47 UTC",
+      "average_speed_knots": 19.5,
+      "average_reliability_score": 94.0,
+      "fuel_consumption_tons": 117.9,
+      "co2_emissions_tons": 367.1,
+      "overall_risk": "Low Operational Risk",
+      "hazard_zones_bypassed": 0,
+      "fuel_saved_tons_vs_direct": 0.0,
+      "hours_saved_vs_direct": 0.0,
+      "waypoints": [
+        {
+          "step": 0,
+          "latitude": 21.69,
+          "longitude": 88.36,
+          "name": "Departure: Kolkata / Haldia Dock",
+          "distance_from_start_nm": 0.0,
+          "leg_distance_nm": 0.0,
+          "heading_deg": 185.5,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.34,
+          "current_speed_knots": 0.42,
+          "current_dir_deg": 247.2,
+          "temperature_c": 23.4,
+          "reliability_score": 94.0,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 1,
+          "latitude": 19.0,
+          "longitude": 88.0,
+          "name": "Water Passage Leg 1 (19.0\u00b0N, 88.0\u00b0E)",
+          "distance_from_start_nm": 162.8,
+          "leg_distance_nm": 162.8,
+          "heading_deg": 187.2,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.35,
+          "current_speed_knots": -0.11,
+          "current_dir_deg": 212.0,
+          "temperature_c": 24.0,
+          "reliability_score": 91.7,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 2,
+          "latitude": 10.0,
+          "longitude": 79.8,
+          "name": "Water Passage Leg 2 (10.0\u00b0N, 79.8\u00b0E)",
+          "distance_from_start_nm": 882.9,
+          "leg_distance_nm": 720.1,
+          "heading_deg": 222.5,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.83,
+          "current_speed_knots": -0.5,
+          "current_dir_deg": 38.4,
+          "temperature_c": 26.5,
+          "reliability_score": 99.4,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 3,
+          "latitude": 9.0,
+          "longitude": 79.4,
+          "name": "Water Passage Leg 3 (9.0\u00b0N, 79.4\u00b0E)",
+          "distance_from_start_nm": 947.5,
+          "leg_distance_nm": 64.5,
+          "heading_deg": 201.6,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.4,
+          "current_speed_knots": -0.48,
+          "current_dir_deg": 23.2,
+          "temperature_c": 26.7,
+          "reliability_score": 97.7,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 4,
+          "latitude": 8.4,
+          "longitude": 78.4,
+          "name": "Water Passage Leg 4 (8.4\u00b0N, 78.4\u00b0E)",
+          "distance_from_start_nm": 1016.9,
+          "leg_distance_nm": 69.4,
+          "heading_deg": 238.8,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.95,
+          "current_speed_knots": -0.48,
+          "current_dir_deg": 8.0,
+          "temperature_c": 26.9,
+          "reliability_score": 95.9,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 5,
+          "latitude": 8.0,
+          "longitude": 77.4,
+          "name": "Water Passage Leg 5 (8.0\u00b0N, 77.4\u00b0E)",
+          "distance_from_start_nm": 1081.0,
+          "leg_distance_nm": 64.1,
+          "heading_deg": 248.1,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.61,
+          "current_speed_knots": -0.48,
+          "current_dir_deg": 355.2,
+          "temperature_c": 27.0,
+          "reliability_score": 95.7,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 6,
+          "latitude": 8.6,
+          "longitude": 76.6,
+          "name": "Water Passage Leg 6 (8.6\u00b0N, 76.6\u00b0E)",
+          "distance_from_start_nm": 1140.6,
+          "leg_distance_nm": 59.6,
+          "heading_deg": 307.2,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 0.65,
+          "current_speed_knots": -0.5,
+          "current_dir_deg": 356.0,
+          "temperature_c": 26.8,
+          "reliability_score": 93.6,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 7,
+          "latitude": 9.8,
+          "longitude": 76.2,
+          "name": "Water Passage Leg 7 (9.8\u00b0N, 76.2\u00b0E)",
+          "distance_from_start_nm": 1216.5,
+          "leg_distance_nm": 75.8,
+          "heading_deg": 341.8,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.0,
+          "current_speed_knots": -0.41,
+          "current_dir_deg": 7.2,
+          "temperature_c": 26.5,
+          "reliability_score": 89.2,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        },
+        {
+          "step": 8,
+          "latitude": 9.9704,
+          "longitude": 76.2314,
+          "name": "Arrival: Cochin (Kochi) Port",
+          "distance_from_start_nm": 1226.9,
+          "leg_distance_nm": 10.4,
+          "heading_deg": 10.3,
+          "expected_speed_knots": 19.5,
+          "wave_height_m": 1.08,
+          "current_speed_knots": -0.4,
+          "current_dir_deg": 9.5,
+          "temperature_c": 26.5,
+          "reliability_score": 88.8,
+          "risk_level": "Low Risk",
+          "advisory": "Favorable ocean sea-lane passage."
+        }
+      ],
+      "direct_distance_nm": 1027.7,
+      "direct_waypoints": [
+        {
+          "latitude": 22.57,
+          "longitude": 88.36
+        },
+        {
+          "latitude": 20.9937,
+          "longitude": 86.8487
+        },
+        {
+          "latitude": 19.4175,
+          "longitude": 85.3375
+        },
+        {
+          "latitude": 17.8413,
+          "longitude": 83.8263
+        },
+        {
+          "latitude": 16.265,
+          "longitude": 82.315
+        },
+        {
+          "latitude": 14.6888,
+          "longitude": 80.8037
+        },
+        {
+          "latitude": 13.1125,
+          "longitude": 79.2925
+        },
+        {
+          "latitude": 11.5363,
+          "longitude": 77.7812
+        },
+        {
+          "latitude": 9.96,
+          "longitude": 76.27
+        }
+      ],
+      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=22.57,88.36&destination=9.96,76.27&waypoints=19.0,88.0|10.0,79.8|9.0,79.4|8.4,78.4|8.0,77.4|8.6,76.6|9.8,76.2",
+      "google_earth_url": "https://earth.google.com/web/@16.265,82.315,500000a,35y,0h,0t,0r"
+    },
+    "comparison_result": null,
+    "data_sources_used": [
+      "GEBCO Bathymetry",
+      "A* Marine Pathfinder",
+      "INCOIS Hydrography"
+    ],
+    "suggestions": [
+      "What are the ocean conditions along this route?",
+      "Compare Kolkata to Kochi with Mumbai to Singapore",
+      "Show vessel fuel consumption details"
+    ],
+    "ui_action": null
+  },
+  "Show me the ocean conditions along this route.": {
+    "reply": "### \ud83c\udf0a Real Oceanographic Data: IND_WEST\nSynthesized hydro-meteorological parameters extracted from database:\n\n- \ud83c\udf21\ufe0f **Sea Surface Temperature**: `28.5 \u00b0C` (`MODEL` HYCOM vs `OBSERVATION` Argo)\n- \ud83e\uddc2 **Sea Surface Salinity**: `33.6 PSU`\n- \ud83d\udca8 **Surface Current Speed**: `0.18 m/s` (~0.3 knots)\n- \ud83d\udcca **Database Coverage**: `5 forecast grids` | `5 in-situ buoy/Argo records`\n\n\ud83d\udfe2 **Quality Assurance**: Data ingested from HYCOM global models and INCOIS buoy telemetry.\n\n_Data Sources: `MODEL` (HYCOM 1/12\u00b0) | `OBSERVATION` (Argo Floats) | `SATELLITE` (INCOIS SST)_",
+    "tools_called": [
+      "get_ocean_data"
+    ],
+    "route_result": null,
+    "comparison_result": null,
+    "data_sources_used": [
+      "MODEL (HYCOM 1/12\u00b0)",
+      "OBSERVATION (Argo Floats & Moored Buoys)",
+      "SATELLITE (INCOIS SST)"
+    ],
+    "suggestions": [
+      "Check forecast reliability for this region",
+      "Are there any active severe alerts?",
+      "Plan a route across this region"
+    ],
+    "ui_action": null
+  },
+  "What dataset is this temperature value from?": {
+    "reply": "### \ud83d\udcda Data Sources & Provenance Metadata\nOceanSphere synthesizes multi-source operational marine telemetry:\n\n- \ud83c\udf10 **HYCOM Hydrodynamic Model**: 1/12\u00b0 (~9km) global daily 3D physical ocean forecast data (`MODEL`).\n- \u2693 **Argo Profiling Floats**: In-situ temperature/salinity profiles up to 2000m depth (`OBSERVATION`).\n- \ud83d\udef0\ufe0f **INCOIS & Satellite SST**: High-resolution Sea Surface Temperature telemetry (`SATELLITE`).\n- \ud83e\udd16 **Gradient Boosting ML Regressor**: Trained model assessing forecast bias & reliability (`ANALYSIS`).\n\n_Data Provenance: `MODEL` (HYCOM) | `OBSERVATION` (INCOIS & Argo) | `SATELLITE` (Sentinel/NOAA)_",
+    "tools_called": [
+      "get_data_provenance"
+    ],
+    "route_result": null,
+    "comparison_result": null,
+    "data_sources_used": [
+      "MODEL",
+      "OBSERVATION",
+      "SATELLITE"
+    ],
+    "suggestions": [
+      "What is the forecast reliability score?",
+      "Show me ocean data for West Coast of India",
+      "Route Mumbai to Singapore"
+    ],
+    "ui_action": null
+  },
+  "Explain this anomaly.": {
+    "reply": "### \ud83d\udee1\ufe0f Forecast Reliability & Analytics: IND_WEST\nML evaluation of numerical ocean models vs in-situ buoy telemetry:\n\n- \ud83c\udfaf **Mean Reliability Score**: `87.2%`\n- \ud83d\udea8 **Active System Alerts**: `5` total (`4` critical severe)\n- \ud83e\udd16 **ML Regressor Model**: `GradientBoostingRegressor v1.2 (R\u00b2 = 0.948)`\n\n\u26a0\ufe0f **Notice**: Severe weather/wave alerts active in this region. Route pathfinder applies hazard avoidance buffers.\n\n_Data Sources: `ANALYSIS` (Gradient Boosting) | `OBSERVATION` (Buoys) | `MODEL` (HYCOM)_",
+    "tools_called": [
+      "get_reliability_analytics"
+    ],
+    "route_result": null,
+    "comparison_result": null,
+    "data_sources_used": [
+      "ANALYSIS (Gradient Boosting ML)",
+      "OBSERVATION (Argo & Buoys)",
+      "MODEL (HYCOM)"
+    ],
+    "suggestions": [
+      "Predict reliability for 28.5\u00b0C forecast vs 27.2\u00b0C observed",
+      "Show ocean data for this region",
+      "Route Kolkata to Kochi"
+    ],
+    "ui_action": null
+  }
+}

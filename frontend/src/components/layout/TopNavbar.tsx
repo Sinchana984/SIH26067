@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Waves, Search, Layers, Clock, Sun, Moon, Settings, Database, Cpu, Globe, BarChart3, AlertTriangle, ShieldCheck, Navigation, FileText, Info } from 'lucide-react';
+import { Waves, Search, Layers, Clock, Settings, Database, Cpu, Globe, BarChart3, AlertTriangle, ShieldCheck, Navigation, FileText, Info } from 'lucide-react';
 import { SystemSettingsModal } from '../modals/SystemSettingsModal';
+import { ThemeToggle } from '../common/ThemeToggle';
 
 interface TopNavbarProps {
   onSearch: (query: string) => void;
@@ -169,13 +170,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
               <span className="hidden sm:inline">Time</span>
             </button>
 
-            <button
-              onClick={onToggleTheme}
-              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-              title="Theme Toggle"
-            >
-              {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-slate-600" />}
-            </button>
+            <ThemeToggle compact={true} />
 
             <button
               onClick={() => setIsSettingsOpen(true)}

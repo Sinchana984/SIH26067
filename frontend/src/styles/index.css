@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    color-scheme: light dark;
+  }
+  
   body {
-    @apply bg-slate-50 text-slate-800 font-sans selection:bg-ocean-500 selection:text-white;
+    @apply bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans selection:bg-ocean-500 selection:text-white transition-colors duration-200;
   }
 }
 
@@ -18,8 +22,17 @@
   background: #F1F5F9;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #CBD5E1;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
   border-radius: 3px;
 }
 
@@ -27,8 +40,41 @@
   background: #94A3B8;
 }
 
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Glass panel utility */
 .glass-panel {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+/* Leaflet Dark Map Tile invert overlay adjustment if dark mode is enabled on standard OSM tiles */
+.dark .leaflet-container {
+  background: #090d16 !important;
+}
+
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #1e293b;
+}
+
+.dark .leaflet-bar a {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+.dark .leaflet-bar a:hover {
+  background-color: #1e293b !important;
 }

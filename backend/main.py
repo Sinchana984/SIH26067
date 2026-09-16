@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config.settings import settings
 from backend.database.connection import get_engine_type
-from backend.api.routes import regions, forecast, observations, reliability, alerts, sources, models, predict, routing, chat
+from backend.api.routes import regions, forecast, observations, reliability, alerts, sources, models, predict, routing, chat, ai_orchestrator
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -36,6 +36,7 @@ app.include_router(models.router)
 app.include_router(predict.router)
 app.include_router(routing.router)
 app.include_router(chat.router)
+app.include_router(ai_orchestrator.router)
 
 @app.get("/")
 def read_root():

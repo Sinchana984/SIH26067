@@ -1,10 +1,13 @@
 import math
+import numpy as np
 from datetime import datetime, timedelta
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
+from global_land_mask import globe
 
 router = APIRouter(prefix="/routing", tags=["Smart Ship Routing"])
+
 
 # ── Domain Models ─────────────────────────────────────────────────────────────
 
@@ -134,133 +137,240 @@ def calculate_bearing(lat1: float, lon1: float, lat2: float, lon2: float) -> flo
     return (bearing + 360.0) % 360.0
 
 
-# ── Marine Sea-Lane Waypoint Generator ────────────────────────────────────────
+# ── Water-Constrained Marine Pathfinding Engine ─────────────────────────────────
+
+# Strategic Maritime Passage Waypoints
+STRATEGIC_WAYPOINTS: List[tuple[float, float]] = [
+    # Hooghly / Kolkata Outlet to Open Bay of Bengal
+    (21.75, 87.88), (21.20, 88.05), (20.90, 88.10), (19.80, 87.00),
+
+    # Arabian Sea & West Coast India
+    (23.00, 68.20), (22.30, 68.80), (20.50, 69.50), (20.00, 71.00), (18.95, 72.70),
+    (17.00, 72.30), (15.00, 72.50), (13.00, 73.50), (11.00, 74.50), (9.96, 75.80), (9.97, 76.22),
+    (8.00, 76.50), (7.00, 76.80),
+    
+    # Cape Comorin & Sri Lanka Passages (STRICT SOUTH SRI LANKA ROUTING)
+    (6.00, 77.50), (5.50, 79.50), (5.20, 80.50), (5.40, 81.80), (7.50, 82.20),
+    (9.00, 82.00), (12.00, 80.80), (13.12, 80.30), (15.00, 81.00), (17.50, 84.00),
+    (19.80, 86.80), (21.20, 88.00),
+
+    # Bay of Bengal & Andaman Sea
+    (11.66, 92.50), (11.66, 93.10), (10.00, 93.00), (6.00, 93.50),
+
+    # Malacca Strait & Singapore Fairways
+    (6.00, 95.00), (5.20, 97.20), (4.00, 99.00), (3.00, 100.50), (2.00, 101.80),
+    (1.40, 103.00), (1.20, 103.50), (1.18, 103.68), (1.22, 103.82), (1.26, 103.79),
+
+    # Persian Gulf, Oman & Middle East
+    (20.00, 65.00), (22.00, 62.00), (23.50, 60.00), (24.00, 59.00), (24.50, 58.50),
+    (25.50, 57.00), (26.20, 56.40), (25.50, 55.50), (25.04, 55.06)
+]
+
+def is_land_segment(p1: tuple[float, float], p2: tuple[float, float], step_nm: float = 0.2) -> bool:
+    """Sample line segment every step_nm nautical miles to verify zero land crossings."""
+    dist_nm = haversine_nm(p1[0], p1[1], p2[0], p2[1])
+    num_checks = max(15, int(dist_nm / step_nm))
+    lats = np.linspace(p1[0], p2[0], num_checks)
+    lons = np.linspace(p1[1], p2[1], num_checks)
+    return bool(np.any(globe.is_land(lats, lons)))
+
+# Build Base Ocean Water Nodes
+_grid_points: List[tuple[float, float]] = []
+
+# Open Ocean Grid (0.8 deg)
+for lt in np.arange(-5.0, 28.0, 0.8):
+    for ln in np.arange(48.0, 108.0, 0.8):
+        if not globe.is_land(lt, ln):
+            _grid_points.append((round(float(lt), 2), round(float(ln), 2)))
+
+# High-Resolution Sri Lanka & Cape Comorin Grid (0.2 deg)
+for lt in np.arange(4.0, 11.0, 0.2):
+    for ln in np.arange(75.0, 84.0, 0.2):
+        if not globe.is_land(lt, ln):
+            _grid_points.append((round(float(lt), 2), round(float(ln), 2)))
+
+# High-Resolution Malacca Strait Grid (0.2 deg)
+for lt in np.arange(0.5, 7.0, 0.2):
+    for ln in np.arange(94.0, 105.0, 0.2):
+        if not globe.is_land(lt, ln):
+            _grid_points.append((round(float(lt), 2), round(float(ln), 2)))
+
+BASE_WATER_NODES: List[tuple[float, float]] = list(dict.fromkeys(STRATEGIC_WAYPOINTS + _grid_points))
+N_BASE: int = len(BASE_WATER_NODES)
+
+# Precompute neighbor graph
+BASE_ADJ: dict = {i: [] for i in range(N_BASE)}
+_buckets: dict = {}
+for _idx, (_lt, _ln) in enumerate(BASE_WATER_NODES):
+    _b_key = (int(_lt // 1.0), int(_ln // 1.0))
+    if _b_key not in _buckets:
+        _buckets[_b_key] = []
+    _buckets[_b_key].append(_idx)
+
+for _idx in range(N_BASE):
+    _lt, _ln = BASE_WATER_NODES[_idx]
+    _b_lat, _b_lon = int(_lt // 1.0), int(_ln // 1.0)
+    _cand_indices = []
+    for _d_lat in range(-1, 2):
+        for _d_lon in range(-1, 2):
+            _key = (_b_lat + _d_lat, _b_lon + _d_lon)
+            if _key in _buckets:
+                _cand_indices.extend(_buckets[_key])
+    for _c_idx in _cand_indices:
+        if _c_idx > _idx:
+            _d = haversine_nm(_lt, _ln, BASE_WATER_NODES[_c_idx][0], BASE_WATER_NODES[_c_idx][1])
+            if _d < 75.0:
+                if not is_land_segment(BASE_WATER_NODES[_idx], BASE_WATER_NODES[_c_idx], step_nm=0.3):
+                    BASE_ADJ[_idx].append((_c_idx, _d))
+                    BASE_ADJ[_c_idx].append((_idx, _d))
+
+print(f"[ROUTING] Base ocean graph initialized with {N_BASE} nodes and precomputed edges.")
+
+def snap_to_water(lat: float, lon: float, max_dist_deg: float = 2.0, step_deg: float = 0.04) -> tuple[float, float]:
+    """Snap port docking coordinates to the nearest valid offshore water point with open ocean connectivity."""
+    if not globe.is_land(lat, lon):
+        return lat, lon
+    best_pt = None
+    min_dist = float('inf')
+    for r in np.arange(step_deg, max_dist_deg + step_deg, step_deg):
+        angles = np.linspace(0, 2 * np.pi, 24, endpoint=False)
+        c_lats = lat + r * np.sin(angles)
+        c_lons = lon + r * np.cos(angles)
+        is_lands = globe.is_land(c_lats, c_lons)
+        for i in range(len(is_lands)):
+            if not is_lands[i]:
+                cand = (round(float(c_lats[i]), 4), round(float(c_lons[i]), 4))
+                for b_idx in range(N_BASE):
+                    b_node = BASE_WATER_NODES[b_idx]
+                    if haversine_nm(cand[0], cand[1], b_node[0], b_node[1]) < 200.0:
+                        if not is_land_segment(cand, b_node, step_nm=0.3):
+                            dist = r + (lat - c_lats[i]) * 0.05
+                            if dist < min_dist:
+                                min_dist = dist
+                                best_pt = cand
+                            break
+        if best_pt:
+            return best_pt
+    return lat, lon
+
+def find_water_route(orig_lat: float, orig_lon: float, dest_lat: float, dest_lon: float) -> List[tuple[float, float]]:
+    """
+    Computes a strictly water-constrained marine route from origin to destination using A* graph search
+    and fine-grained 0.2nm segment revalidation.
+    """
+    s_orig = snap_to_water(orig_lat, orig_lon)
+    s_dest = snap_to_water(dest_lat, dest_lon)
+
+    if not is_land_segment(s_orig, s_dest, step_nm=0.2):
+        return [s_orig, s_dest]
+
+    import heapq
+    orig_idx = N_BASE
+    dest_idx = N_BASE + 1
+    extra_adj: dict = {orig_idx: [], dest_idx: []}
+
+    for idx in range(N_BASE):
+        d_orig = haversine_nm(s_orig[0], s_orig[1], BASE_WATER_NODES[idx][0], BASE_WATER_NODES[idx][1])
+        if d_orig < 220.0 and not is_land_segment(s_orig, BASE_WATER_NODES[idx], step_nm=0.3):
+            extra_adj[orig_idx].append((idx, d_orig))
+
+        d_dest = haversine_nm(s_dest[0], s_dest[1], BASE_WATER_NODES[idx][0], BASE_WATER_NODES[idx][1])
+        if d_dest < 220.0 and not is_land_segment(s_dest, BASE_WATER_NODES[idx], step_nm=0.3):
+            extra_adj[dest_idx].append((idx, d_dest))
+
+    if not extra_adj[orig_idx] or not extra_adj[dest_idx]:
+        raise ValueError(f"Could not connect origin ({s_orig}) or destination ({s_dest}) to water network.")
+
+    open_set: List[tuple[float, int]] = []
+    heapq.heappush(open_set, (0.0, orig_idx))
+    came_from: dict = {}
+    g_score: dict = {i: float('inf') for i in range(N_BASE + 2)}
+    g_score[orig_idx] = 0.0
+    target = dest_idx
+
+    def get_neighbors(u: int):
+        if u == orig_idx:
+            return extra_adj[orig_idx]
+        elif u == dest_idx:
+            return extra_adj[dest_idx]
+        else:
+            nbrs = list(BASE_ADJ[u])
+            for d_idx, d_dist in extra_adj[dest_idx]:
+                if d_idx == u:
+                    nbrs.append((dest_idx, d_dist))
+            return nbrs
+
+    def get_coord(u: int) -> tuple[float, float]:
+        if u == orig_idx:
+            return s_orig
+        if u == dest_idx:
+            return s_dest
+        return BASE_WATER_NODES[u]
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+
+        if current == target:
+            path_indices = [current]
+            while current in came_from:
+                current = came_from[current]
+                path_indices.append(current)
+            path_indices.reverse()
+
+            raw_path = [get_coord(idx) for idx in path_indices]
+
+            # Simplify path with strict 0.2nm land revalidation
+            simplified = [raw_path[0]]
+            curr_i = 0
+            while curr_i < len(raw_path) - 1:
+                next_i = len(raw_path) - 1
+                while next_i > curr_i + 1:
+                    if not is_land_segment(raw_path[curr_i], raw_path[next_i], step_nm=0.2):
+                        break
+                    next_i -= 1
+                simplified.append(raw_path[next_i])
+                curr_i = next_i
+
+            return simplified
+
+        for nbr, dist in get_neighbors(current):
+            tentative_g = g_score[current] + dist
+            if tentative_g < g_score[nbr]:
+                came_from[nbr] = current
+                g_score[nbr] = tentative_g
+                nbr_coord = get_coord(nbr)
+                f = tentative_g + haversine_nm(nbr_coord[0], nbr_coord[1], s_dest[0], s_dest[1])
+                heapq.heappush(open_set, (f, nbr))
+
+    raise ValueError("No water path found.")
+
+
 
 def get_maritime_corridor(origin: PortSchema, dest: PortSchema) -> List[tuple[float, float, str]]:
     """
-    Generates realistic ocean sea-lane passage waypoints avoiding land masses
-    (e.g., bypassing southern India/Cape Comorin, Sri Lanka, Malacca Strait, Persian Gulf).
+    Generates realistic ocean sea-lane passage waypoints strictly avoiding land masses.
     """
-    nodes: List[tuple[float, float, str]] = []
-    nodes.append((origin.latitude, origin.longitude, f"Departure: {origin.name}"))
+    try:
+        water_path = find_water_route(origin.latitude, origin.longitude, dest.latitude, dest.longitude)
+    except Exception as e:
+        print(f"[ROUTING] find_water_route failed: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"No valid water route found between {origin.name} and {dest.name} without crossing land."
+        )
 
-    west_ports = {'BOM', 'COK', 'MRM', 'IXY', 'DXB', 'MCT', 'MLE'}
-    east_ports = {'MAA', 'VTZ', 'CCU', 'TCR', 'IXZ', 'SIN'}
-
-    orig_is_west = origin.id in west_ports or (origin.longitude < 77.5 and origin.id != 'TCR')
-    dest_is_west = dest.id in west_ports or (dest.longitude < 77.5 and dest.id != 'TCR')
-    orig_is_east = origin.id in east_ports or (origin.longitude >= 77.5 or origin.id == 'TCR')
-    dest_is_east = dest.id in east_ports or (dest.longitude >= 77.5 or dest.id == 'TCR')
-
-    # 1. Specific origin exit waypoints
-    if origin.id == 'IXY':
-        nodes.append((22.3, 68.8, "Gulf of Kutch Outer Fairway"))
-    elif origin.id == 'DXB':
-        nodes.append((25.6, 56.4, "Strait of Hormuz Chokepoint"))
-        nodes.append((24.0, 59.0, "Gulf of Oman Approach"))
-        nodes.append((20.0, 65.0, "Central Arabian Sea Channel"))
-    elif origin.id == 'MCT':
-        nodes.append((23.5, 60.0, "Gulf of Oman Exit"))
-        nodes.append((20.0, 65.0, "Central Arabian Sea Channel"))
-    elif origin.id == 'CCU':
-        nodes.append((21.2, 88.2, "Hooghly River Exit"))
-        nodes.append((19.8, 87.0, "Offshore Odisha"))
-    elif origin.id == 'SIN':
-        nodes.append((2.8, 101.2, "Malacca Strait Corridor"))
-        nodes.append((5.2, 96.5, "Northern Malacca Strait Entrance"))
-        nodes.append((6.0, 93.5, "Six Degree Channel (Great Nicobar)"))
-
-    # 2. Inter-basin corridor: West <-> East
-    if orig_is_west and dest_is_east:
-        if origin.latitude > 15.0 and origin.id not in ['DXB', 'MCT']:
-            nodes.append((15.0, 72.5, "Offshore Konkan"))
-        if origin.latitude > 10.0:
-            nodes.append((9.8, 75.2, "Lakshadweep Sea Corridor"))
-        nodes.append((7.0, 76.8, "Off Cape Comorin (Kanyakumari Passage)"))
-
-        if dest.id == 'TCR':
-            nodes.append((7.8, 77.8, "Gulf of Mannar Approach"))
-        elif dest.id == 'CMB':
-            pass
-        else:
-            nodes.append((5.5, 80.6, "South Sri Lanka (Dondra Head)"))
-            if dest.latitude > 11.0 and dest.id not in ['IXZ', 'SIN']:
-                nodes.append((13.2, 81.5, "Coromandel Sea Lane"))
-                if dest.latitude > 16.0:
-                    nodes.append((17.5, 84.5, "Offshore Visakhapatnam"))
-                    if dest.latitude > 20.0:
-                        nodes.append((19.8, 87.0, "Central Bay of Bengal Lane"))
-
-    elif orig_is_east and dest_is_west:
-        if origin.latitude > 16.0 and origin.id != 'CCU':
-            nodes.append((17.5, 84.5, "Offshore Visakhapatnam"))
-        if origin.latitude > 11.0 and origin.id not in ['IXZ', 'SIN']:
-            nodes.append((13.2, 81.5, "Coromandel Sea Lane"))
-
-        if origin.id == 'TCR':
-            nodes.append((7.8, 77.8, "Gulf of Mannar Passage"))
-        elif origin.id == 'CMB':
-            pass
-        else:
-            nodes.append((5.5, 80.6, "South Sri Lanka (Dondra Head)"))
-
-        nodes.append((7.0, 76.8, "Off Cape Comorin (Kanyakumari Passage)"))
-        if dest.latitude > 10.0:
-            nodes.append((9.8, 75.2, "Lakshadweep Sea Corridor"))
-            if dest.latitude > 15.0 and dest.id not in ['DXB', 'MCT']:
-                nodes.append((15.0, 72.5, "Offshore Konkan"))
-
-    # 3. Same-basin coastal transit
-    elif orig_is_west and dest_is_west:
-        if origin.id != dest.id:
-            mid_lat = (origin.latitude + dest.latitude) / 2.0
-            mid_lon = min(origin.longitude, dest.longitude) - 2.0
-            if mid_lat > 18.0 and mid_lon > 69.5:
-                mid_lon = 69.5
-            nodes.append((mid_lat, mid_lon, "Arabian Sea Offshore Corridor"))
-
-    elif orig_is_east and dest_is_east:
-        if origin.id != dest.id:
-            mid_lat = (origin.latitude + dest.latitude) / 2.0
-            mid_lon = max(origin.longitude, dest.longitude) + 2.0
-            nodes.append((mid_lat, mid_lon, "Bay of Bengal Offshore Corridor"))
-
-    # 4. Specific destination entry waypoints
-    if dest.id == 'IXY':
-        nodes.append((22.3, 68.8, "Gulf of Kutch Outer Fairway"))
-    elif dest.id == 'DXB':
-        nodes.append((20.0, 65.0, "Central Arabian Sea Channel"))
-        nodes.append((24.0, 59.0, "Gulf of Oman Approach"))
-        nodes.append((25.6, 56.4, "Strait of Hormuz Chokepoint"))
-    elif dest.id == 'MCT':
-        nodes.append((20.0, 65.0, "Central Arabian Sea Channel"))
-        nodes.append((23.5, 60.0, "Gulf of Oman Approach"))
-    elif dest.id == 'CCU':
-        nodes.append((19.8, 87.0, "Offshore Odisha"))
-        nodes.append((21.2, 88.2, "Hooghly River Approach"))
-    elif dest.id == 'SIN':
-        nodes.append((6.0, 93.5, "Six Degree Channel (Great Nicobar)"))
-        nodes.append((5.2, 96.5, "Northern Malacca Strait Entrance"))
-        nodes.append((2.8, 101.2, "Malacca Strait Corridor"))
-
-    # Interpolate intermediate waypoints smoothly along nodes
     points: List[tuple[float, float, str]] = []
-    nodes.append((dest.latitude, dest.longitude, f"Arrival: {dest.name}"))
+    total_pts = len(water_path)
 
-    for k in range(len(nodes) - 1):
-        n1 = nodes[k]
-        n2 = nodes[k + 1]
-        leg_dist = haversine_nm(n1[0], n1[1], n2[0], n2[1])
-        sub_steps = max(2, int(leg_dist / 110.0))
+    for idx, (lat, lon) in enumerate(water_path):
+        if idx == 0:
+            name = f"Departure: {origin.name}"
+        elif idx == total_pts - 1:
+            name = f"Arrival: {dest.name}"
+        else:
+            name = f"Water Passage Leg {idx} ({round(lat, 2)}°N, {round(lon, 2)}°E)"
+        points.append((lat, lon, name))
 
-        for s in range(sub_steps):
-            frac = s / float(sub_steps)
-            lat = n1[0] + (n2[0] - n1[0]) * frac
-            lon = n1[1] + (n2[1] - n1[1]) * frac
-            name = n1[2] if s == 0 else f"Leg {k+1}.{s} ({round(lat,2)}°N, {round(lon,2)}°E)"
-            points.append((lat, lon, name))
-
-    points.append((dest.latitude, dest.longitude, f"Arrival: {dest.name}"))
     return points
 
 

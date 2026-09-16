@@ -7,6 +7,24 @@
     <title>OceanSphere | Ocean Forecast Reliability & Decision Support System</title>
     <meta name="description" content="Scientific research platform for ocean forecast reliability analysis, anomaly detection, and INCOIS decision support." />
     
+    <!-- Prevent theme flash script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('oceansphere_theme');
+          var isDark = saved === 'dark' || (
+            (!saved || saved === 'system') &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+          );
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,9 +37,8 @@
     <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.119/Widgets/widgets.css">
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.119/Cesium.js"></script>
   </head>
-  <body class="bg-slate-50 text-slate-800 antialiased font-sans overflow-x-hidden selection:bg-ocean-500 selection:text-white">
+  <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 antialiased font-sans overflow-x-hidden selection:bg-ocean-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

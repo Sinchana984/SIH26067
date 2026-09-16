@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { getSources, getReliability, getAlerts, getRegions, getForecast } from '../../services/api';
+import { getSources, getReliability, getAlerts, getRegions } from '../../services/api';
 import { DataSourceMeta, ReliabilityScore, AlertItem, Region } from '../../types';
 import {
   FileText, Download, FileSpreadsheet, FileCode, CheckCircle, Loader2,
-  ShieldCheck, AlertTriangle, Globe, BarChart3, Filter, RefreshCw,
-  Eye, Printer, Calendar, ChevronDown, ChevronUp, Award, Cpu
+  ShieldCheck, AlertTriangle, Filter, RefreshCw,
+  Eye, Printer, ChevronDown, ChevronUp, Award, Cpu
 } from 'lucide-react';
 
 type ReportType = 'executive' | 'reliability' | 'alerts' | 'forecast' | 'full';
-type ExportFormat = 'pdf' | 'csv' | 'json' | 'txt';
 
 interface DownloadState {
   loading: boolean;
@@ -26,7 +25,6 @@ export const ReportsPage: React.FC = () => {
   const [dlState, setDlState] = useState<DownloadState>({ loading: false, success: '', error: '' });
   const [selectedRegion, setSelectedRegion] = useState('All Regions');
   const [selectedSeverity, setSelectedSeverity] = useState('All');
-  const [reportType, setReportType] = useState<ReportType>('executive');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -190,7 +188,7 @@ export const ReportsPage: React.FC = () => {
     }
   };
 
-  // ─── PDF Export (browser print-to-PDF) ─────────────────────────────────────
+  // ─── PDF Export ────────────────────────────────────────────────────────────
   const handleExportPDF = () => {
     setDlState({ loading: true, success: '', error: '' });
     try {
@@ -210,7 +208,6 @@ export const ReportsPage: React.FC = () => {
     }
   };
 
-  // Helpers
   const dateTag = () => new Date().toISOString().slice(0, 10);
 
   const triggerBlobDownload = (blob: Blob, filename: string) => {
@@ -362,10 +359,10 @@ export const ReportsPage: React.FC = () => {
     amber: 'bg-amber-500 hover:bg-amber-600',
   };
   const iconBgMap: Record<string, string> = {
-    ocean: 'bg-ocean-100 text-ocean-600',
-    emerald: 'bg-emerald-100 text-emerald-600',
-    indigo: 'bg-indigo-100 text-indigo-600',
-    amber: 'bg-amber-100 text-amber-600',
+    ocean: 'bg-ocean-100 dark:bg-ocean-900/80 text-ocean-600 dark:text-ocean-400',
+    emerald: 'bg-emerald-100 dark:bg-emerald-900/80 text-emerald-600 dark:text-emerald-400',
+    indigo: 'bg-indigo-100 dark:bg-indigo-900/80 text-indigo-600 dark:text-indigo-400',
+    amber: 'bg-amber-100 dark:bg-amber-900/80 text-amber-600 dark:text-amber-400',
   };
 
   return (
@@ -373,76 +370,76 @@ export const ReportsPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <FileText className="w-6 h-6 text-ocean-600" />
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <FileText className="w-6 h-6 text-ocean-600 dark:text-ocean-400" />
             <span>Scientific Reports & Export Center</span>
           </h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
             Generate, preview, and download ocean forecast reliability reports in PDF, CSV, JSON, and TXT formats.
           </p>
         </div>
         <button
           onClick={loadData}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors"
           title="Refresh data"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${!dataLoaded ? 'animate-spin text-ocean-600' : 'text-slate-500'}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${!dataLoaded ? 'animate-spin text-ocean-600' : 'text-slate-500 dark:text-slate-400'}`} />
           <span>{dataLoaded ? 'Refresh' : 'Loading…'}</span>
         </button>
       </div>
 
       {/* Status Banner */}
       {dlState.success && (
-        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
-          <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+          <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>{dlState.success}</span>
         </div>
       )}
       {dlState.error && (
-        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+        <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{dlState.error}</span>
         </div>
       )}
       {dlState.loading && (
-        <div className="p-3 rounded-xl bg-ocean-50 border border-ocean-200 text-ocean-800 text-xs font-semibold flex items-center gap-2">
-          <Loader2 className="w-4 h-4 text-ocean-600 animate-spin shrink-0" />
+        <div className="p-3 rounded-xl bg-ocean-50 dark:bg-ocean-950/60 border border-ocean-200 dark:border-ocean-800 text-ocean-800 dark:text-ocean-300 text-xs font-semibold flex items-center gap-2">
+          <Loader2 className="w-4 h-4 text-ocean-600 dark:text-ocean-400 animate-spin shrink-0" />
           <span>Generating report…</span>
         </div>
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-        <div className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-slate-700">
-          <Filter className="w-4 h-4 text-ocean-600" />
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs">
+        <div className="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          <Filter className="w-4 h-4 text-ocean-600 dark:text-ocean-400" />
           <span>Report Filters</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">Region</label>
+            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-1">Region</label>
             <select
               value={selectedRegion}
               onChange={e => setSelectedRegion(e.target.value)}
-              className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ocean-500/20 focus:border-ocean-500"
+              className="w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-ocean-500/20 focus:border-ocean-500"
             >
               {REGIONS.map(r => <option key={r}>{r}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-[10px] font-semibold text-slate-500 uppercase mb-1">Alert Severity</label>
+            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-1">Alert Severity</label>
             <select
               value={selectedSeverity}
               onChange={e => setSelectedSeverity(e.target.value)}
-              className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-ocean-500/20 focus:border-ocean-500"
+              className="w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-ocean-500/20 focus:border-ocean-500"
             >
               {['All', 'CRITICAL', 'WARNING'].map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
           <div className="col-span-2 flex items-end">
-            <div className="flex gap-4 text-xs text-slate-600 bg-slate-50 rounded-xl p-2.5 border border-slate-200 w-full justify-around">
-              <span>📊 <strong className="text-ocean-600">{filteredReliability.length}</strong> records</span>
-              <span>⚠️ <strong className="text-rose-600">{filteredAlerts.length}</strong> alerts</span>
-              <span>📈 <strong className="text-emerald-600">{avgReliability}%</strong> avg reliability</span>
+            <div className="flex gap-4 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 rounded-xl p-2.5 border border-slate-200 dark:border-slate-700 w-full justify-around">
+              <span>📊 <strong className="text-ocean-600 dark:text-ocean-400">{filteredReliability.length}</strong> records</span>
+              <span>⚠️ <strong className="text-rose-600 dark:text-rose-400">{filteredAlerts.length}</strong> alerts</span>
+              <span>📈 <strong className="text-emerald-600 dark:text-emerald-400">{avgReliability}%</strong> avg reliability</span>
             </div>
           </div>
         </div>
@@ -451,15 +448,15 @@ export const ReportsPage: React.FC = () => {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { icon: ShieldCheck, label: 'Avg Reliability', value: `${avgReliability}%`, color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' },
-          { icon: Award, label: 'High Reliability', value: `${highCount}`, color: 'text-ocean-600', bg: 'bg-ocean-50 border-ocean-200' },
-          { icon: AlertTriangle, label: 'Active Alerts', value: `${filteredAlerts.length}`, color: 'text-rose-600', bg: 'bg-rose-50 border-rose-200' },
-          { icon: Cpu, label: 'ML R² Score', value: '99.91%', color: 'text-indigo-600', bg: 'bg-indigo-50 border-indigo-200' },
+          { icon: ShieldCheck, label: 'Avg Reliability', value: `${avgReliability}%`, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/60' },
+          { icon: Award, label: 'High Reliability', value: `${highCount}`, color: 'text-ocean-600 dark:text-ocean-400', bg: 'bg-ocean-50 dark:bg-ocean-950/40 border-ocean-200 dark:border-ocean-900/60' },
+          { icon: AlertTriangle, label: 'Active Alerts', value: `${filteredAlerts.length}`, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60' },
+          { icon: Cpu, label: 'ML R² Score', value: '99.91%', color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/60' },
         ].map((s, i) => (
           <div key={i} className={`rounded-2xl border p-4 shadow-xs ${s.bg}`}>
             <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
             <div className={`text-2xl font-extrabold ${s.color}`}>{s.value}</div>
-            <div className="text-[11px] text-slate-500 font-medium mt-0.5">{s.label}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -467,18 +464,18 @@ export const ReportsPage: React.FC = () => {
       {/* Download Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {reportCards.map(card => (
-          <div key={card.id} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div key={card.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBgMap[card.color]}`}>
                   <card.icon className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                   {card.badge}
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 mb-1">{card.label}</h3>
-              <p className="text-[11px] text-slate-500 leading-relaxed">{card.desc}</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{card.label}</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{card.desc}</p>
             </div>
             <button
               onClick={card.action}
@@ -493,17 +490,17 @@ export const ReportsPage: React.FC = () => {
       </div>
 
       {/* Reliability Preview Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         <div
-          className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors"
+          className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
           onClick={() => setPreviewOpen(v => !v)}
         >
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-            <Eye className="w-4 h-4 text-ocean-600" />
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+            <Eye className="w-4 h-4 text-ocean-600 dark:text-ocean-400" />
             <span>Data Preview — Top Reliability Records</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold text-slate-500">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
               Showing {Math.min(15, filteredReliability.length)} of {filteredReliability.length}
             </span>
             {previewOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
@@ -514,31 +511,31 @@ export const ReportsPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-[11px]">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
+                <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800">
                   {['#', 'Region', 'Reliability', 'Confidence', 'Risk Level', 'Forecast Temp', 'Obs Temp', 'Bias', 'Timestamp'].map(h => (
-                    <th key={h} className="text-left px-3 py-2.5 font-bold text-slate-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                    <th key={h} className="text-left px-3 py-2.5 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                 {filteredReliability
                   .sort((a, b) => b.reliability_score - a.reliability_score)
                   .slice(0, 15)
                   .map((r, i) => (
-                    <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="px-3 py-2 text-slate-400 font-mono">{i + 1}</td>
-                      <td className="px-3 py-2 font-bold text-ocean-700">{r.region_id}</td>
+                      <td className="px-3 py-2 font-bold text-ocean-700 dark:text-ocean-400">{r.region_id}</td>
                       <td className="px-3 py-2">
-                        <span className={`font-extrabold ${r.reliability_score >= 80 ? 'text-emerald-600' : r.reliability_score >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
+                        <span className={`font-extrabold ${r.reliability_score >= 80 ? 'text-emerald-600 dark:text-emerald-400' : r.reliability_score >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
                           {r.reliability_score?.toFixed(1)}%
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-slate-700">{r.confidence_level}</td>
-                      <td className="px-3 py-2 text-slate-700">{r.risk_level}</td>
-                      <td className="px-3 py-2 font-mono text-slate-800">{r.forecast_temperature?.toFixed(2)}°C</td>
-                      <td className="px-3 py-2 font-mono text-slate-800">{r.observed_temperature?.toFixed(2)}°C</td>
-                      <td className="px-3 py-2 font-mono text-slate-600">{r.temperature_bias?.toFixed(3)}</td>
-                      <td className="px-3 py-2 text-slate-400 font-mono whitespace-nowrap">
+                      <td className="px-3 py-2 text-slate-700 dark:text-slate-300">{r.confidence_level}</td>
+                      <td className="px-3 py-2 text-slate-700 dark:text-slate-300">{r.risk_level}</td>
+                      <td className="px-3 py-2 font-mono text-slate-800 dark:text-slate-200">{r.forecast_temperature?.toFixed(2)}°C</td>
+                      <td className="px-3 py-2 font-mono text-slate-800 dark:text-slate-200">{r.observed_temperature?.toFixed(2)}°C</td>
+                      <td className="px-3 py-2 font-mono text-slate-600 dark:text-slate-400">{r.temperature_bias?.toFixed(3)}</td>
+                      <td className="px-3 py-2 text-slate-400 dark:text-slate-500 font-mono whitespace-nowrap">
                         {r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '—'}
                       </td>
                     </tr>
@@ -546,7 +543,7 @@ export const ReportsPage: React.FC = () => {
               </tbody>
             </table>
             {filteredReliability.length === 0 && (
-              <div className="text-center py-8 text-slate-400 text-xs">No records found for selected filters.</div>
+              <div className="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">No records found for selected filters.</div>
             )}
           </div>
         )}
@@ -554,36 +551,36 @@ export const ReportsPage: React.FC = () => {
 
       {/* Alerts Preview */}
       {filteredAlerts.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-rose-500" />
-            <span className="text-sm font-bold text-slate-900">Alerts Preview</span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600">
+            <span className="text-sm font-bold text-slate-900 dark:text-white">Alerts Preview</span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-300">
               {filteredAlerts.length} active
             </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-[11px]">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
+                <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800">
                   {['Alert Type', 'Severity', 'Region', 'Latitude', 'Longitude', 'Description'].map(h => (
-                    <th key={h} className="text-left px-3 py-2.5 font-bold text-slate-500 uppercase tracking-wide">{h}</th>
+                    <th key={h} className="text-left px-3 py-2.5 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                 {filteredAlerts.slice(0, 10).map((a, i) => (
-                  <tr key={i} className="border-b border-slate-100 hover:bg-rose-50/30 transition-colors">
-                    <td className="px-3 py-2 font-bold text-slate-800">{a.alert_type}</td>
+                  <tr key={i} className="hover:bg-rose-50/30 dark:hover:bg-rose-950/20 transition-colors">
+                    <td className="px-3 py-2 font-bold text-slate-800 dark:text-slate-200">{a.alert_type}</td>
                     <td className="px-3 py-2">
-                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${a.severity === 'CRITICAL' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>
+                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${a.severity === 'CRITICAL' ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300' : 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300'}`}>
                         {a.severity}
                       </span>
                     </td>
-                    <td className="px-3 py-2 font-mono text-ocean-700">{a.region_id}</td>
+                    <td className="px-3 py-2 font-mono text-ocean-700 dark:text-ocean-400">{a.region_id}</td>
                     <td className="px-3 py-2 font-mono">{a.latitude?.toFixed(2)}°</td>
                     <td className="px-3 py-2 font-mono">{a.longitude?.toFixed(2)}°</td>
-                    <td className="px-3 py-2 text-slate-600 max-w-xs truncate">{a.description}</td>
+                    <td className="px-3 py-2 text-slate-600 dark:text-slate-400 max-w-xs truncate">{a.description}</td>
                   </tr>
                 ))}
               </tbody>
